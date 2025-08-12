@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Online Chess Game</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -17,6 +18,8 @@
             min-height: 100vh;
             color: white;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
@@ -53,7 +56,7 @@
         h1 {
             text-align: center;
             color: #fff;
-            font-size: 2em;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             background: linear-gradient(45deg, #fff, #f1c40f);
@@ -64,7 +67,7 @@
 
         .login-section {
             background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
+            padding: clamp(15px, 4vw, 25px);
             border-radius: 12px;
             text-align: center;
             backdrop-filter: blur(10px);
@@ -76,7 +79,7 @@
         .section {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            padding: 12px;
+            padding: clamp(8px, 2vw, 15px);
             margin-bottom: 12px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
@@ -85,19 +88,20 @@
         .section h3 {
             color: #f1c40f;
             margin-bottom: 10px;
-            font-size: 1em;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: clamp(8px, 2vw, 12px);
             border: none;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: clamp(14px, 3vw, 16px);
             background: rgba(255, 255, 255, 0.9);
             color: #333;
+            min-height: 44px; /* Touch target minimum */
         }
 
         input[type="text"]:focus {
@@ -109,13 +113,15 @@
             background: linear-gradient(45deg, #f39c12, #e67e22);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 25px);
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: clamp(12px, 2.5vw, 14px);
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
+            min-height: 44px; /* Touch target minimum */
+            min-width: 44px;
         }
 
         button:hover {
@@ -130,15 +136,14 @@
         .chess-board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            gap: 2px;
+            gap: clamp(1px, 0.3vw, 2px);
             background: #8B4513;
-            padding: 12px;
-            border-radius: 10px;
+            padding: clamp(8px, 2vw, 15px);
+            border-radius: 12px;
             border: 3px solid #654321;
-            width: min(80vw, 400px);
-            height: min(80vw, 400px);
-            max-width: 400px;
-            max-height: 400px;
+            width: min(90vw, min(90vh, 420px));
+            height: min(90vw, min(90vh, 420px));
+            aspect-ratio: 1;
         }
 
         .chess-cell {
@@ -146,11 +151,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: min(6vw, 28px);
+            font-size: clamp(16px, 4vw, 32px);
             cursor: pointer;
             border-radius: 4px;
             position: relative;
             user-select: none;
+            touch-action: manipulation;
         }
 
         .chess-cell.light {
@@ -172,7 +178,6 @@
             box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
         }
 
-        /* FIXED: Only show green dots, no background color change */
         .chess-cell.possible-move {
             position: relative;
         }
@@ -183,13 +188,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(3vw, 12px);
-            height: min(3vw, 12px);
+            width: clamp(8px, 2vw, 12px);
+            height: clamp(8px, 2vw, 12px);
             background: #2ecc71;
             border-radius: 50%;
         }
 
-        /* For capture moves - show orange border circles */
         .chess-cell.possible-capture {
             position: relative;
         }
@@ -200,8 +204,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(4vw, 16px);
-            height: min(4vw, 16px);
+            width: clamp(12px, 3vw, 18px);
+            height: clamp(12px, 3vw, 18px);
             border: 2px solid #e67e22;
             border-radius: 50%;
         }
@@ -209,18 +213,19 @@
         .player-list {
             max-height: 150px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .player-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
-            margin-bottom: 5px;
+            padding: clamp(6px, 1.5vw, 10px);
+            margin-bottom: 6px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 13px;
+            font-size: clamp(12px, 2.5vw, 14px);
         }
 
         .player-name {
@@ -229,20 +234,24 @@
         }
 
         .invite-btn {
-            padding: 4px 8px;
-            font-size: 10px;
+            padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+            font-size: clamp(10px, 2vw, 12px);
             background: linear-gradient(45deg, #27ae60, #2ecc71);
-            border-radius: 12px;
+            border-radius: 15px;
+            min-height: 36px;
+            min-width: 60px;
         }
 
         .game-info {
             text-align: center;
-            padding: 12px;
+            padding: clamp(10px, 2vw, 15px);
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 10px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
         }
 
         .status-indicator {
@@ -250,7 +259,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            margin-right: 5px;
+            margin-right: 6px;
         }
 
         .status-online { background: #2ecc71; }
@@ -261,16 +270,17 @@
             position: fixed;
             top: 15px;
             right: 15px;
-            padding: 10px 15px;
+            left: 15px;
+            padding: 12px 15px;
             background: rgba(46, 204, 113, 0.9);
             color: white;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
             z-index: 1000;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 13px;
-            max-width: 250px;
+            font-size: clamp(12px, 2.5vw, 14px);
+            text-align: center;
         }
 
         .notification.error {
@@ -290,7 +300,8 @@
             font-weight: bold;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 12px;
+            font-size: clamp(11px, 2vw, 13px);
+            z-index: 999;
         }
 
         .connection-status.connected {
@@ -308,20 +319,23 @@
             gap: 10px;
             justify-content: center;
             margin-top: 10px;
+            width: 100%;
+            max-width: 300px;
         }
 
         .match-history {
             max-height: 120px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .match-item {
-            padding: 6px;
+            padding: clamp(4px, 1vw, 8px);
             margin-bottom: 5px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
+            border-radius: 6px;
             border-left: 3px solid #f1c40f;
-            font-size: 11px;
+            font-size: clamp(10px, 2vw, 12px);
         }
 
         .match-winner {
@@ -339,46 +353,46 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
             backdrop-filter: blur(5px);
+            padding: 20px;
         }
 
         .modal-content {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            padding: 25px;
-            border-radius: 12px;
+            padding: clamp(20px, 5vw, 30px);
+            border-radius: 15px;
             text-align: center;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            max-width: 350px;
-            width: 90%;
-            margin: 0 10px;
+            width: 100%;
+            max-width: 380px;
         }
 
         .modal h2 {
             color: #f1c40f;
-            margin-bottom: 12px;
-            font-size: 1.6em;
+            margin-bottom: 15px;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .modal p {
             color: white;
             margin-bottom: 20px;
-            font-size: 1em;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             line-height: 1.4;
         }
 
         .turn-indicator {
-            font-size: 1em;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
             font-weight: bold;
-            padding: 10px;
-            border-radius: 6px;
+            padding: clamp(8px, 2vw, 12px);
+            border-radius: 8px;
             text-align: center;
             margin-bottom: 10px;
         }
@@ -393,164 +407,249 @@
             color: #ecf0f1;
         }
 
-        /* ENHANCED RESPONSIVE DESIGN */
-        
-        /* Large Desktop */
-        @media (min-width: 1200px) {
-            .chess-board {
-                width: 450px;
-                height: 450px;
-            }
-            .chess-cell {
-                font-size: 32px;
-            }
-            .sidebar {
-                flex: 0 0 320px;
-            }
-        }
+        /* MOBILE SPECIFIC OPTIMIZATIONS */
 
-        /* Tablet Portrait & Small Desktop */
-        @media (max-width: 1199px) and (min-width: 768px) {
+        /* Tablet Portrait & Landscape */
+        @media (max-width: 1024px) {
             .container {
                 flex-direction: column;
+                gap: 10px;
                 padding: 8px;
             }
+            
             .sidebar {
                 flex: none;
                 width: 100%;
                 max-height: 200px;
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 10px;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 8px;
+                overflow-y: visible;
             }
-            .chess-board {
-                width: min(70vw, 380px);
-                height: min(70vw, 380px);
-            }
-            .chess-cell {
-                font-size: min(5vw, 26px);
+
+            .main-content {
+                max-height: none;
             }
         }
 
-        /* Mobile Landscape & Small Tablet */
-        @media (max-width: 767px) and (min-width: 481px) {
+        /* Mobile Landscape */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .container {
+                flex-direction: row;
+                padding: 5px;
+                gap: 8px;
+            }
+            
+            .sidebar {
+                flex: 0 0 200px;
+                max-height: calc(100vh - 10px);
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+
+            .chess-board {
+                width: min(60vh, 300px);
+                height: min(60vh, 300px);
+            }
+
+            h1 {
+                margin-bottom: 5px;
+            }
+
+            .game-info {
+                margin-bottom: 5px;
+                padding: 8px;
+            }
+        }
+
+        /* Mobile Portrait */
+        @media (max-width: 768px) and (orientation: portrait) {
             .container {
                 flex-direction: column;
                 padding: 5px;
                 gap: 8px;
             }
+            
             .sidebar {
                 flex: none;
                 width: 100%;
                 max-height: 150px;
                 padding: 10px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
+
             .section {
                 padding: 8px;
-                margin-bottom: 8px;
+                margin-bottom: 5px;
             }
+
             .chess-board {
-                width: min(75vw, 350px);
-                height: min(75vw, 350px);
-                padding: 8px;
+                width: min(85vw, 350px);
+                height: min(85vw, 350px);
             }
-            .chess-cell {
-                font-size: min(5.5vw, 24px);
-            }
-            h1 {
-                font-size: 1.6em;
-                margin-bottom: 8px;
-            }
+
             .player-list, .match-history {
-                max-height: 100px;
+                max-height: 80px;
+            }
+
+            .notification {
+                font-size: 12px;
+                padding: 10px 12px;
             }
         }
 
-        /* Mobile Portrait */
+        /* Small Mobile */
         @media (max-width: 480px) {
             .container {
-                flex-direction: column;
                 padding: 3px;
                 gap: 5px;
             }
+
             .sidebar {
-                flex: none;
-                width: 100%;
-                max-height: 140px;
                 padding: 8px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
+                max-height: 140px;
                 gap: 5px;
             }
+
             .section {
                 padding: 6px;
-                margin-bottom: 5px;
+                margin-bottom: 4px;
             }
-            .section h3 {
-                font-size: 0.9em;
-                margin-bottom: 6px;
-            }
+
             .chess-board {
-                width: min(85vw, 300px);
-                height: min(85vw, 300px);
-                padding: 6px;
-                gap: 1px;
+                width: min(90vw, 300px);
+                height: min(90vw, 300px);
+                padding: 8px;
             }
+
             .chess-cell {
-                font-size: min(6vw, 20px);
                 border-radius: 2px;
             }
-            h1 {
-                font-size: 1.4em;
-                margin-bottom: 5px;
-            }
+
             .login-section {
-                padding: 15px;
+                padding: 12px;
             }
+
             .game-info {
                 padding: 8px;
                 margin-bottom: 8px;
             }
+
             .turn-indicator {
                 padding: 8px;
-                font-size: 0.9em;
             }
+
             .player-list, .match-history {
-                max-height: 80px;
-                font-size: 11px;
+                max-height: 70px;
             }
+
             .player-item {
+                padding: 8px 6px;
+                margin-bottom: 4px;
+            }
+
+            .match-item {
                 padding: 6px;
                 margin-bottom: 3px;
             }
-            .match-item {
-                padding: 4px;
-                margin-bottom: 3px;
+
+            button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .invite-btn {
+                padding: 6px 10px;
                 font-size: 10px;
+                min-height: 32px;
+                min-width: 50px;
             }
+
             .modal-content {
-                padding: 20px;
-                margin: 0 5px;
+                padding: 15px;
+                margin: 0 10px;
             }
-            .modal h2 {
-                font-size: 1.4em;
-            }
-            .modal p {
-                font-size: 0.9em;
+
+            .notification {
+                top: 10px;
+                left: 10px;
+                right: 10px;
             }
         }
 
         /* Very Small Mobile */
         @media (max-width: 360px) {
             .chess-board {
-                width: min(90vw, 280px);
-                height: min(90vw, 280px);
+                width: min(95vw, 280px);
+                height: min(95vw, 280px);
+                padding: 6px;
             }
-            .chess-cell {
-                font-size: min(6.5vw, 18px);
-            }
+
             .sidebar {
                 grid-template-columns: 1fr;
+                padding: 6px;
+            }
+
+            .section {
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .chess-cell {
+                font-size: 16px;
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .chess-cell:hover {
+                opacity: 1;
+            }
+            
+            .chess-cell:active {
+                opacity: 0.7;
+                transform: scale(0.95);
+            }
+            
+            button:active {
+                transform: scale(0.95);
+            }
+            
+            .player-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: none;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .chess-cell.light {
+                background: #ffffff;
+                color: #000000;
+            }
+            
+            .chess-cell.dark {
+                background: #000000;
+                color: #ffffff;
+            }
+            
+            .chess-cell.selected {
+                background: #ffff00 !important;
+                color: #000000 !important;
             }
         }
     </style>
@@ -629,7 +728,7 @@
                 <p>Enter your name in the sidebar to join the game lobby and challenge other players.</p>
                 <div style="margin-top: 10px;">
                     <h4>🎮 How to Play:</h4>
-                    <ul style="text-align: left; margin-top: 6px; color: #ecf0f1; font-size: 13px;">
+                    <ul style="text-align: left; margin-top: 6px; color: #ecf0f1; font-size: clamp(11px, 2.5vw, 13px);">
                         <li>Join the game lobby with your name</li>
                         <li>See other online players in the sidebar</li>
                         <li>Click "Invite" to challenge someone</li>
@@ -656,11 +755,11 @@
         <div class="modal-content">
             <h2>🎯 Chess Invitation</h2>
             <p id="inviteMessage">Player wants to play chess with you!</p>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 12px;">
-                <button onclick="acceptInvite()" style="background: linear-gradient(45deg, #27ae60, #2ecc71);">
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap;">
+                <button onclick="acceptInvite()" style="background: linear-gradient(45deg, #27ae60, #2ecc71); flex: 1; min-width: 100px;">
                     Accept
                 </button>
-                <button onclick="declineInvite()" style="background: linear-gradient(45deg, #e74c3c, #c0392b);">
+                <button onclick="declineInvite()" style="background: linear-gradient(45deg, #e74c3c, #c0392b); flex: 1; min-width: 100px;">
                     Decline
                 </button>
             </div>
@@ -990,7 +1089,6 @@
             return moves;
         }
 
-        // OPTIMIZED: Instant highlighting, no animations
         function highlightPossibleMoves(moves) {
             clearPossibleMoves();
             
@@ -1273,12 +1371,17 @@
                     }
                     
                     cell.addEventListener('click', () => handleCellClick(row, col));
+                    // Add touch event for better mobile experience
+                    cell.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        handleCellClick(row, col);
+                    }, { passive: false });
+                    
                     board.appendChild(cell);
                 }
             }
         }
 
-        // OPTIMIZED: Fast cell click handling with instant visual feedback
         function handleCellClick(row, col) {
             if (!isMyTurn) {
                 if (possibleMoves.length > 0) {
